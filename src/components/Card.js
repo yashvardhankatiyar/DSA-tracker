@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import LoadingBar from 'react-top-loading-bar';
 
 const Card = ({ info, index }) => {
   const navigate = useNavigate();
@@ -13,7 +12,7 @@ const Card = ({ info, index }) => {
 
   return (
     <Box
-      onClick={() => handleClick(info)}
+      onClick={() => handleClick(info.type)}
       key={index}
       margin="10px"
       className="topic-Box"
@@ -25,13 +24,13 @@ const Card = ({ info, index }) => {
         border: "4px solid black",
         borderRadius: "10px",
         alignItems: "center",
-        backgroundColor: "#161F38",
+        backgroundColor: "#2F3C7E",
         boxShadow: 5,
         cursor: "pointer",
       }}
     >
       <Typography fontFamily="'Poppins', sans-serif" fontSize="25px" color="white">
-        {info}
+        {info.type}
       </Typography>
     </Box>
   );

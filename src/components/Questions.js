@@ -1,76 +1,57 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Stack, Typography, Button } from '@mui/material';
 import Ques from './Ques';
-import { Array, Greedy, DP, BSQ, Heap, Recursion, LinkedList, BinaryTree, BinarySearchTree, SQT, Backtracking, Graph } from '../data/data'; 
 import { useNavigate } from 'react-router';
+import axios from 'axios';
 
 const Questions = ({ topic }) => {
   const [attemptedCount, setAttemptedCount] = useState(0);
   const [questionsArray, setQuestionsArray] = useState([]);
 
   useEffect(() => {
-    switch (topic) {
-      case 'Array':
-        setQuestionsArray(Array);
-        break;
-      case 'Greedy':
-        setQuestionsArray(Greedy);
-        break;
-      case 'DP':
-        setQuestionsArray(DP);
-        break;
-      case 'BSQ':
-        setQuestionsArray(BSQ);
-        break;
-      case 'Heap':
-        setQuestionsArray(Heap);
-        break;
-      case 'Recursion':
-        setQuestionsArray(Recursion);
-        break;
-      case 'LinkedList':
-        setQuestionsArray(LinkedList);
-        break;
-      case 'BinaryTree':
-        setQuestionsArray(BinaryTree);
-        break;
-      case 'BinarySearchTree':
-        setQuestionsArray(BinarySearchTree);
-        break;
-      case 'SQT':
-        setQuestionsArray(SQT);
-        break;
-      case 'Backtracking':
-        setQuestionsArray(Backtracking);
-        break;
-      case 'Graph':
-        setQuestionsArray(Graph);
-        break;
-      default:
-        break;
-    }
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem('token'); // Get token from localStorage
+        const headers = { Authorization: `Bearer ${token}` }; 
+
+        const response = await axios.get(`https://dsa-track-backend.onrender.com/Questions`, {headers});
+        const newQ = response.data.filter(Q => Q.type === topic);
+        setQuestionsArray(newQ);
+      } catch (error) {
+        console.error('Error fetching questions:', error);
+      }
+    };
+    fetchData();
   }, [topic]);
 
+  const editData = async (id) => {
+    try {
+      const response = await axios.patch(`https://dsa-track-backend.onrender.com/Questions/${id}`);
+      const updatedQuestion = response.data;
+
+      const newone = questionsArray.map(q => q._id === id ? updatedQuestion : q);
+      setQuestionsArray(newone);
+    } catch (error) {
+      console.error('Error updating question:', error);
+    }
+  };
+
   const updateQuestionStatus = (id, status) => {
-    const updatedQuestions = questionsArray.map(question =>
-      question.ID === id ? { ...question, status } : question
-    );
-    setQuestionsArray(updatedQuestions);
+    editData(id);
   };
 
   useEffect(() => {
     const attempted = () => {
       const attemptedQuestions = questionsArray.filter(question => question.status === 'complete');
       setAttemptedCount(attemptedQuestions.length);
-    }
-  
+    };
     attempted();
   }, [questionsArray]);
 
   const navigate = useNavigate();
   const handleClick = () => {
-    navigate('/');
-  }
+    navigate('/home');
+  };
 
   const totalQues = questionsArray.length;
 
@@ -129,12 +110,11 @@ const Questions = ({ topic }) => {
         >
           {questionsArray.map((info) => (
             <Ques
-              key={info.ID}
-              id={info.ID}
-              Q={info.Q}
+              key={info._id}
+              id={info._id}
+              Q={info.question}
               link={info.link}
               status={info.status}
-              done={info.done}
               updateStatus={updateQuestionStatus}
             />
           ))}
