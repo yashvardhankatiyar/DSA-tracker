@@ -33,7 +33,7 @@ const Login = () => {
       console.log('tokn : ', response.data)
       if (response.status === 200 && response.data.token) {
         localStorage.setItem('token', response.data.token);
-        navigate('https://dsa-track-backend.onrender.com/home');
+        navigate('/home');
       } else {
         setPasswordError('Invalid email or password');
       }
@@ -108,7 +108,7 @@ const Login = () => {
         <TextField
           placeholder='Password'
           name='password'
-         // type='password'
+          type='password'
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           error={!!passwordError}
